@@ -45,7 +45,7 @@ public class Chromo
 			}
 			break;
 
-		case 2: 	//  Set gene values to random numbers for radius and angle.
+		case 3: 	//  Set gene values to random numbers for radius and angle.
 			chromo = "";
 			for (int i=0; i<Parameters.numGenes; i++){
 				double radius = Search.r.nextDouble();
@@ -61,6 +61,7 @@ public class Chromo
 		this.rawFitness = -1;   //  Fitness not yet evaluated
 		this.sclFitness = -1;   //  Fitness not yet scaled
 		this.proFitness = -1;   //  Fitness not yet proportionalized
+
 	}
 
 
@@ -143,15 +144,31 @@ public class Chromo
 					chromosome[i][1] = Double.parseDouble(gene[1]);	
 				}
 			}
-			
+			/*For value mutation we are currently replacing the value of the chromosome with a new random number which is a big mutation
+			 * for binary representation we shift only one bit. perhaps we can scale the change and increase or decrease by a differential?
+			 */
 			for (int k=0; k<Parameters.numGenes; k++){
 				randnum = Search.r.nextDouble();
 				if (randnum < Parameters.mutationRate){
-					chromosome[k][0] = Search.r.nextDouble();
+					double anotherRand = Search.r.nextDouble();
+					double delta = chromosome[k][0]*0.1;
+					if(anotherRand > 0.5){
+						chromosome[k][0] = chromosome[k][0] + delta;
+					}
+					else{
+						chromosome[k][0] = chromosome[k][0] - delta;
+					}
 				}
 				randnum = Search.r.nextDouble();
 				if (randnum < Parameters.mutationRate){
-					chromosome[k][1] = Search.r.nextDouble() * 2 * Math.PI;
+					double anotherRand = Search.r.nextDouble();
+					double delta = chromosome[k][1]*0.1;
+					if(anotherRand > 0.5){
+						chromosome[k][1] = chromosome[k][1] + delta;
+					}
+					else{
+						chromosome[k][1] = chromosome[k][1] - delta;
+					}
 				}
 				mutChromo = mutChromo + String.format("%.4f", chromosome[k][0]) + "," + String.format("%.4f", chromosome[k][1]) + "/";
 			}
@@ -207,14 +224,48 @@ public class Chromo
 		switch (Parameters.xoverType){
 
 		case 1:     //  Single Point Crossover
+			//  Select crossover operator based on encoding type
+			switch(Parameters.chromosomeType){
+				case 1:/*Binary encoding */
+					xoverPoint1 = 1 + (int)(Search.r.nextDouble() * (Parameters.numGenes * Parameters.geneSize-1));
 
-			//  Select crossover point
-			xoverPoint1 = 1 + (int)(Search.r.nextDouble() * (Parameters.numGenes * Parameters.geneSize-1));
+					//  Create child chromosome from parental material
+					child1.chromo = parent1.chromo.substring(0,xoverPoint1) + parent2.chromo.substring(xoverPoint1);
+					child2.chromo = parent2.chromo.substring(0,xoverPoint1) + parent1.chromo.substring(xoverPoint1);
+					break;
+				case 3: /*Value encoding crossover*/				
+					//System.out.print("Printing Parent 1: "+ parent1.chromo + System.lineSeparator());
+					//System.out.print("Printing Parent 2: "+ parent2.chromo + System.lineSeparator());
 
-			//  Create child chromosome from parental material
-			child1.chromo = parent1.chromo.substring(0,xoverPoint1) + parent2.chromo.substring(xoverPoint1);
-			child2.chromo = parent2.chromo.substring(0,xoverPoint1) + parent1.chromo.substring(xoverPoint1);
+						String[] c1 = parent1.chromo.split("/");
+						String[] c2 = parent2.chromo.split("/");
+						String c1Chromo = "";
+						String c2Chromo = "";
+						for (int i=0; i<Parameters.numGenes; i++){
+							String[] p1genes = c1[i].split(",");
+							double p1radius = Double.parseDouble(p1genes[0]);
+							double p1angle = Double.parseDouble(p1genes[1]);
+							String[] p2genes = c2[i].split(",");
+							double p2radius = Double.parseDouble(p2genes[0]);
+							double p2angle = Double.parseDouble(p2genes[1]);
+							double random = Search.r.nextDouble();
+							double child1Rad = (1-random)*p1radius + (random)*p2radius;
+							double child2Rad = (1-random)*p2radius + (random)*p1radius;
+							double child1Angle = (1-random)*p1angle + (random)*p2angle;
+							double child2Angle = (1-random)*p2angle + (random)*p1angle;
+							c1Chromo = c1Chromo + String.format("%.4f", child1Rad) + "," + String.format("%.4f", child1Angle) + "/";
+							c2Chromo= c2Chromo + String.format("%.4f", child2Rad) + "," + String.format("%.4f", child2Angle) + "/";
+						}
+
+					//System.out.print("Printing Child 1: "+ c1Chromo + System.lineSeparator());
+					//System.out.print("Printing Child 2: "+ c2Chromo + System.lineSeparator());
+					child1.chromo = c1Chromo;
+					child2.chromo = c2Chromo;
+
+					break;
+			}
 			break;
+
 
 		case 2:     //  Two Point Crossover
 
