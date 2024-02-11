@@ -45,6 +45,27 @@ public class Chromo
 			}
 			break;
 
+		case 2: 	//genetate binary number and then convert to gray
+			char currBit;
+			String binChromo = "";
+			//Generate binary string
+			for (int i=0; i<Parameters.numGenes; i++){
+				for (int j=0; j<Parameters.geneSize; j++){
+					randnum = Search.r.nextDouble();
+					if (randnum > 0.5) currBit = '0';
+					else currBit = '1';
+					binChromo = binChromo + currBit;
+				}
+			}
+			//Transform to gray string
+			//System.out.println("Binary representation: " + binChromo + System.lineSeparator());
+
+			this.chromo = binarytoGray(binChromo);
+			//System.out.println("Gray representation: " + this.chromo + System.lineSeparator());
+
+			break;
+
+
 		case 3: 	//  Set gene values to random numbers for radius and angle.
 			chromo = "";
 			for (int i=0; i<Parameters.numGenes; i++){
@@ -120,21 +141,39 @@ public class Chromo
 
 		switch (Parameters.mutationType){
 
-		case 1:     //  Replace with new random binary number
-
-			for (int j=0; j<(Parameters.geneSize * Parameters.numGenes); j++){
-				x = this.chromo.charAt(j);
-				randnum = Search.r.nextDouble();
-				if (randnum < Parameters.mutationRate){
-					if (x == '1') x = '0';
-					else x = '1';
-				}
-				mutChromo = mutChromo + x;
+		case 1:     //  Bit flip mutation
+			switch(Parameters.chromosomeType){
+				case 1: //Binary Mutation
+					for (int j=0; j<(Parameters.geneSize * Parameters.numGenes); j++){
+						x = this.chromo.charAt(j);
+						randnum = Search.r.nextDouble();
+						if (randnum < Parameters.mutationRate){
+							if (x == '1') x = '0';
+							else x = '1';
+						}
+						mutChromo = mutChromo + x;
+					}
+					this.chromo = mutChromo;
+					break;
+				case 2: 	//Gray scale mutation
+					String binString = graytoBinary(this.chromo);
+		
+					for (int j=0; j<(Parameters.geneSize * Parameters.numGenes); j++){
+						x = binString.charAt(j);
+						randnum = Search.r.nextDouble();
+						if (randnum < Parameters.mutationRate){
+							if (x == '1') x = '0';
+							else x = '1';
+						}
+						mutChromo = mutChromo + x;
+					}
+					this.chromo = binarytoGray(mutChromo);	
+					break;			
+				default:
+					System.out.println("ERROR - Mutation type and Representation dont match");
 			}
-			this.chromo = mutChromo;
 			break;
-
-		case 2: 	// Replace with number in bounds
+		case 3: 	// Value mutation
 			double[][] chromosome = new double[Parameters.numGenes][2];
 			for (int j=0; j<(Parameters.geneSize); j++){
 				String[] c = this.chromo.split("/");
@@ -233,6 +272,16 @@ public class Chromo
 					child1.chromo = parent1.chromo.substring(0,xoverPoint1) + parent2.chromo.substring(xoverPoint1);
 					child2.chromo = parent2.chromo.substring(0,xoverPoint1) + parent1.chromo.substring(xoverPoint1);
 					break;
+				case 2: /*Gray scale encoding */
+					xoverPoint1 = 1 + (int)(Search.r.nextDouble() * (Parameters.numGenes * Parameters.geneSize-1));
+					//Convert parent gray representation to binary
+					String p1Binchromo = graytoBinary(parent1.chromo);
+					String p2Binchromo = graytoBinary(parent2.chromo);
+
+					//  Create child chromosome from parental material and transform back to gray scale
+					child1.chromo = binarytoGray(p1Binchromo.substring(0,xoverPoint1) + p2Binchromo.substring(xoverPoint1));
+					child2.chromo = binarytoGray(p2Binchromo.substring(0,xoverPoint1) + p1Binchromo.substring(xoverPoint1));
+				break;
 				case 3: /*Value encoding crossover*/				
 					//System.out.print("Printing Parent 1: "+ parent1.chromo + System.lineSeparator());
 					//System.out.print("Printing Parent 2: "+ parent2.chromo + System.lineSeparator());
@@ -310,5 +359,47 @@ public class Chromo
 		targetA.proFitness = sourceB.proFitness;
 		return;
 	}
+	//HELPER FUNCTIONS TO CONVERT FROM BINARY TO GRAY ENCODING AND VICE VERSA
+	//  X-OR bits   					***************************************
+	public static char bit_xor(char a, char b){
+        return (a == b) ? '0' : '1';
+	}
+	//  Flip Bits
+	public static char bit_flip(char a){
+        return (a == '0') ? '1' : '0';
+	}
+	//  Convert gray code to binary  	***************************************
+
+	public static String graytoBinary(String gray)
+    {
+        String bin = "";
+
+        bin += gray.charAt(0);
+ 
+        for (int i = 1; i < gray.length(); i++) 
+        {
+            if (gray.charAt(i) == '0')
+				bin += bin.charAt(i - 1);
+            else
+				bin += bit_flip(bin.charAt(i - 1));
+        }
+        return bin;
+    }
+
+	//  Convert binary to gray code   	***************************************
+	public static String binarytoGray(String bin)
+    {
+        String gray = "";
+        gray += bin.charAt(0);
+
+        for (int i = 1; i < bin.length(); i++) 
+        {
+            gray += bit_xor(bin.charAt(i - 1),
+                          bin.charAt(i));
+        }
+       return gray;
+    }
+
+
 
 }   // End of Chromo.java ******************************************************
