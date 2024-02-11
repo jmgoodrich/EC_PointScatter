@@ -36,7 +36,18 @@ public class PointScatter extends FitnessFunction{
 				}
 				break;
 			case 2: //  Decode gray string to polar values
-
+				//Transform gray to binary
+				String binChromo = Chromo.graytoBinary(X.chromo);
+				//Do operations in binary
+				for (int i=0; i<Parameters.numGenes; i++){
+					String gene = binChromo.substring(i*Parameters.geneSize, (i+1)*Parameters.geneSize);
+					String radius = gene.substring(0, 4);
+					String angle = gene.substring(4, 8);
+					chromosome[i][0] = Double.valueOf(Integer.parseInt(radius, 2)*0.0625);
+					double degrees = Double.valueOf(Integer.parseInt(angle, 2)*22.5);
+					double radians = Math.toRadians(degrees);
+					chromosome[i][1] = radians;
+				}
 				break;
 
 			case 3: // Decode value string to polar values
