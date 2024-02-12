@@ -243,6 +243,7 @@ public class Chromo
 			for (j=0; j<Parameters.popSize; j++){
 				for (k=0; k<tournSize; k++){
 					randnum = Search.r.nextDouble();
+					best = 0;
 					int contestant = (int) (randnum * Parameters.popSize);
 					if (best < Search.member[contestant].proFitness){
 						best = Search.member[contestant].proFitness;
