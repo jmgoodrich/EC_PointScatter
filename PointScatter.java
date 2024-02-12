@@ -55,7 +55,7 @@ public class PointScatter extends FitnessFunction{
 				for (int i=0; i<Parameters.numGenes; i++){
 					String[] gene = c[i].split(",");
 					chromosome[i][0] = Double.parseDouble(gene[0]);
-					chromosome[i][1] = Double.parseDouble(gene[1]);	
+					chromosome[i][1] = Double.parseDouble(gene[1]);
 				}
 				break;
 		}
@@ -84,7 +84,7 @@ public class PointScatter extends FitnessFunction{
 		for (int i=0; i<Parameters.numGenes; i++){
 			Hwrite.right(X.getPosIntGeneValue(i),11,output);
 		}
-		Hwrite.right((int) X.rawFitness,13,output);
+		Hwrite.right(X.rawFitness,13,8,output);
 		output.write("\n\n");
 		return;
 	}
