@@ -70,7 +70,7 @@ public class Search {
 
 	public static void main(String[] args) throws java.io.IOException{
 
-		Calendar dateAndTime = Calendar.getInstance(); 
+		Calendar dateAndTime = Calendar.getInstance();
 		Date startTime = dateAndTime.getTime();
 
 	//  Read Parameter File
@@ -92,7 +92,7 @@ public class Search {
 	//	Problem Specific Setup - For new new fitness function problems, create
 	//	the appropriate class file (extending FitnessFunction.java) and add
 	//	an else_if block below to instantiate the problem.
- 
+
 		if (Parameters.problemType.equals("NM")){
 			problem = new NumberMatch();
 		}
@@ -203,21 +203,21 @@ public class Search {
 
 				averageRawFitness = sumRawFitness / Parameters.popSize;
 				stdevRawFitness = Math.sqrt(
-							Math.abs(sumRawFitness2 - 
+							Math.abs(sumRawFitness2 -
 							sumRawFitness*sumRawFitness/Parameters.popSize)
 							/
 							(Parameters.popSize-1)
 							);
 
 				// Output generation statistics to screen
-				System.out.println(R + "\t" + G +  "\t" + (int)bestOfGenChromo.rawFitness + "\t" + averageRawFitness + "\t" + stdevRawFitness);
+				System.out.println(R + "\t" + G +  "\t" + bestOfGenChromo.rawFitness + "\t" + averageRawFitness + "\t" + stdevRawFitness);
 
 				// Output generation statistics to summary file
 				summaryOutput.write(" R ");
 				Hwrite.right(R, 3, summaryOutput);
 				summaryOutput.write(" G ");
 				Hwrite.right(G, 3, summaryOutput);
-				Hwrite.right((int)bestOfGenChromo.rawFitness, 7, summaryOutput);
+				Hwrite.right(bestOfGenChromo.rawFitness, 7, 3, summaryOutput);
 				Hwrite.right(averageRawFitness, 11, 3, summaryOutput);
 				Hwrite.right(stdevRawFitness, 11, 3, summaryOutput);
 				summaryOutput.write("\n");
@@ -358,7 +358,7 @@ public class Search {
 
 			problem.doPrintGenes(bestOfRunChromo, summaryOutput);
 
-			System.out.println(R + "\t" + "B" + "\t"+ (int)bestOfRunChromo.rawFitness);
+			System.out.println(R + "\t" + "B" + "\t" + bestOfRunChromo.rawFitness);
 
 		} //End of a Run
 
@@ -380,11 +380,10 @@ public class Search {
 
 		System.out.println();
 		System.out.println("Start:  " + startTime);
-		dateAndTime = Calendar.getInstance(); 
+		dateAndTime = Calendar.getInstance();
 		Date endTime = dateAndTime.getTime();
 		System.out.println("End  :  " + endTime);
 
 	} // End of Main Class
 
 }   // End of Search.Java ******************************************************
-
