@@ -173,7 +173,7 @@ public class Chromo
 					System.out.println("ERROR - Mutation type and Representation dont match");
 			}
 			break;
-		case 3: 	// Value mutation
+		case 2: 	// Value mutation
 			double[][] chromosome = new double[Parameters.numGenes][2];
 			for (int j=0; j<(Parameters.geneSize); j++){
 				String[] c = this.chromo.split("/");
@@ -244,7 +244,6 @@ public class Chromo
 			break;
 
 		case 2:     //  Tournament Selection
-			
 			for (j=0; j<Parameters.popSize; j++){
 				for (k=0; k<tournSize; k++){
 					randnum = Search.r.nextDouble();
@@ -256,6 +255,7 @@ public class Chromo
 				}
 				return(victor);
 			}
+			break;
 
 		case 3:     // Random Selection
 			randnum = Search.r.nextDouble();
@@ -263,7 +263,31 @@ public class Chromo
 			return(j);
 
 		case 4:		// Rank Selection
+			for (int i=0; i<Parameters.popSize; i++){
+						Search.memberIndex[i] = i;
+						Search.memberFitness[i] = Search.member[i].rawFitness;
+					}
 
+			// Sort 
+			for (int i=1; i<Parameters.popSize; i++){
+						for (int h=(Parameters.popSize - 1); h>=i; h--){
+							if (Search.memberFitness[h-i] < Search.memberFitness[h]){
+								int TmemberIndex = Search.memberIndex[h-1];
+								double TmemberFitness = Search.memberFitness[h-1];
+								Search.memberIndex[h-1] = Search.memberIndex[h];
+								Search.memberFitness[h-1] = Search.memberFitness[h];
+								Search.memberIndex[h] = TmemberIndex;
+								Search.memberFitness[h] = TmemberFitness;
+							}
+						}
+					}
+
+			randnum = Search.r.nextDouble();
+			for (j=0; j<Parameters.popSize; j++){
+				rWheel = rWheel + Search.member[Search.memberIndex[j]].proFitness;
+				if (randnum < rWheel) return(j);
+			}
+			break;
 
 
 		default:
