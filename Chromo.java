@@ -202,6 +202,7 @@ public class Chromo
 						}
 						mutChromo = mutChromo + String.format("%.4f", chromosome[k][0]) + "," + String.format("%.4f", chromosome[k][1]) + "/";
 					}
+					this.chromo = mutChromo;
 					break;
 
 				default:
