@@ -47,10 +47,10 @@ public class Search {
 	public static Random r = new Random();
 	private static double randnum;
 
-	private static int memberIndex[];
-	private static double memberFitness[];
-	private static int TmemberIndex;
-	private static double TmemberFitness;
+	public static int memberIndex[];
+	public static double memberFitness[];
+	public static int TmemberIndex;
+	public static double TmemberFitness;
 
 	private static double fitnessStats[][];  // 0=Avg, 1=Best
 
