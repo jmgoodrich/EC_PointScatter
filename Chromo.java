@@ -134,7 +134,7 @@ public class Chromo
 
 	//  Mutate a Chromosome Based on Mutation Type *****************************
 
-	public void doMutation(){
+		public void doMutation(){
 
 		String mutChromo = "";
 		char x;
@@ -168,53 +168,49 @@ public class Chromo
 						mutChromo = mutChromo + x;
 					}
 					this.chromo = binarytoGray(mutChromo);	
-					break;			
+					break;	
+				case 3:
+					System.out.println("Mutation type 1 not supported with Chromosome type 3 (value), plese switch chromosome type to either 1 (binary) or 2 (gray)");
+					break;
 				default:
-					System.out.println("ERROR - Mutation type and Representation dont match");
+					System.out.println("ERROR - Mutation of type 1 cannot be used for value encoding");
 			}
 			break;
-		case 3: 	// Value mutation
-			double[][] chromosome = new double[Parameters.numGenes][2];
-			for (int j=0; j<(Parameters.geneSize); j++){
-				String[] c = this.chromo.split("/");
-				for (int i=0; i<Parameters.numGenes; i++){
-					String[] gene = c[i].split(",");
-					chromosome[i][0] = Double.parseDouble(gene[0]);
-					chromosome[i][1] = Double.parseDouble(gene[1]);	
-				}
-			}
-			/*For value mutation we are currently replacing the value of the chromosome with a new random number which is a big mutation
-			 * for binary representation we shift only one bit. perhaps we can scale the change and increase or decrease by a differential?
-			 */
-			for (int k=0; k<Parameters.numGenes; k++){
-				randnum = Search.r.nextDouble();
-				if (randnum < Parameters.mutationRate){
-					double anotherRand = Search.r.nextDouble();
-					double delta = chromosome[k][0]*0.1;
-					if(anotherRand > 0.5){
-						chromosome[k][0] = chromosome[k][0] + delta;
-					}
-					else{
-						chromosome[k][0] = chromosome[k][0] - delta;
-					}
-				}
-				randnum = Search.r.nextDouble();
-				if (randnum < Parameters.mutationRate){
-					double anotherRand = Search.r.nextDouble();
-					double delta = chromosome[k][1]*0.1;
-					if(anotherRand > 0.5){
-						chromosome[k][1] = chromosome[k][1] + delta;
-					}
-					else{
-						chromosome[k][1] = chromosome[k][1] - delta;
-					}
-				}
-				mutChromo = mutChromo + String.format("%.4f", chromosome[k][0]) + "," + String.format("%.4f", chromosome[k][1]) + "/";
-			}
-			break;
+		case 2: 	// Custom Mutation only for Value
 
+			switch(Parameters.chromosomeType){
+				case 3:
+					// Replace with number in bounds
+					double[][] chromosome = new double[Parameters.numGenes][2];
+					for (int j=0; j<(Parameters.geneSize); j++){
+						String[] c = this.chromo.split("/");
+						for (int i=0; i<Parameters.numGenes; i++){
+							String[] gene = c[i].split(",");
+							chromosome[i][0] = Double.parseDouble(gene[0]);
+							chromosome[i][1] = Double.parseDouble(gene[1]);	
+						}
+					}
+
+					for (int k=0; k<Parameters.numGenes; k++){
+						randnum = Search.r.nextDouble();
+						if (randnum < Parameters.mutationRate){
+							chromosome[k][0] = Search.r.nextDouble();
+						}
+						randnum = Search.r.nextDouble();
+						if (randnum < Parameters.mutationRate){
+							chromosome[k][1] = Search.r.nextDouble() * 2 * Math.PI;
+						}
+						mutChromo = mutChromo + String.format("%.4f", chromosome[k][0]) + "," + String.format("%.4f", chromosome[k][1]) + "/";
+					}
+					break;
+
+				default:
+					System.out.println("ERROR - Mutation of type 2 cannot be used Chromosomes type 1 (binary) and 2 (gray)");
+			}
+			break;
 		default:
 			System.out.println("ERROR - No mutation method selected");
+			break;
 		}
 	}
 
